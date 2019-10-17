@@ -123,6 +123,7 @@
             document.addEventListener('keydown',function(event){
                 // socket.emit('my_key', {data: 'key down'});
                 if (event.keyCode == 68){
+                    $('#log').append('<br>' + $('<div/>').text('http://' + document.domain + ':' + 8000 + namespace).html());
                     socket.emit('left', {data: 'left'});
 
                     }
