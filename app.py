@@ -5,6 +5,8 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 import eventlet
 import random
+
+
 class world():
     def __init__(self, rows, coloumns):
         self.rows = rows
@@ -94,6 +96,7 @@ def test_message(message):
 
 @socketio.on('left', namespace='/test')
 def left_key(message):
+    global new_world
     session['receive_count'] = session.get('receive_count', 0) + 1
     current_character = session.get('character')
     current_character.x = current_character.x + 1
@@ -109,6 +112,7 @@ def left_key(message):
 
 @socketio.on('right', namespace='/test')
 def right_key(message):
+    global new_world
     session['receive_count'] = session.get('receive_count', 0) + 1
     current_character = session.get('character')
     current_character.x = current_character.x - 1
@@ -124,6 +128,7 @@ def right_key(message):
 
 @socketio.on('up', namespace='/test')
 def up_key(message):
+    global new_world
     session['receive_count'] = session.get('receive_count', 0) + 1
     current_character = session.get('character')
     current_character.y = current_character.y - 1
@@ -139,6 +144,7 @@ def up_key(message):
 
 @socketio.on('down', namespace='/test')
 def down_key(message):
+    global new_world
     session['receive_count'] = session.get('receive_count', 0) + 1
     current_character = session.get('character')
     current_character.y = current_character.y + 1
@@ -154,6 +160,7 @@ def down_key(message):
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
+    global new_world
     player = character()
     new_world.characters.append(player)
     session['character'] = player
