@@ -170,4 +170,4 @@ class character():
 if __name__ == '__main__':
     new_world = world(20, 20)
     new_world.world_create()
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, host='0.0.0.0', port=8000)
