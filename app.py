@@ -4,7 +4,7 @@ from flask import Flask, render_template, session, request, \
     copy_current_request_context
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
-
+import eventlet
 import random
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
