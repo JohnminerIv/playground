@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Flask-SocketIO Test</title>
+    <title>Playground</title>
     <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
@@ -10,41 +10,10 @@
             var canvas = document.getElementById("canvas");
             var ctx = canvas.getContext("2d");
             ctx.fillStyle = "#000000"
-            ctx.fillRect(0, 0, 1000, 1000)
+            ctx.fillRect(0, 0, 330, 330)
             function draw(x, y, width, height, color){
                 ctx.fillStyle = color;
                 ctx.fillRect(x, y, width, height);
-            }
-            function grid(color="#000000"){
-                gridwidth = 300;
-                gridheight = 300;
-                width = 60;
-                height = 60;
-                for (var c = 5; c < gridwidth;) {
-                 for (var r = 5; r < gridheight;) {
-                    draw(c, r, width, height, color)
-                    r = r + 65;
-                  }
-                  c = c + 65;
-                }
-
-            }
-            function grid_real(list){
-                gridwidth = 300;
-                gridheight = 300;
-                width = 60;
-                height = 60;
-                index = 0
-                for (var c = 5; c < gridwidth;) {
-                 for (var r = 5; r < gridheight;) {
-                    draw(c, r, width, height, list[index])
-
-                    r = r + 65;
-                    index = index + 1
-                  }
-                  c = c + 65;
-                }
-
             }
             function veiw_port(list){
                 width = 60
@@ -61,7 +30,6 @@
                     x = x + 65;
                 }
             }
-            grid();
             // Use a "/test" namespace.
             // An application can open a connection on multiple namespaces, and
             // Socket.IO will multiplex all those connections on a single
@@ -145,16 +113,15 @@
     </script>
 </head>
 <body>
-    <h1>Flask-SocketIO Test</h1>
-    <p>Async mode is: <b></b></p>
+    <h1>Playground</h1>
     <canvas id="canvas" width="330" height="330"></canvas>
-    <h2>Send:</h2>
+    <!--<h2>Send:</h2>
     <form id="emit" method="POST" action=''>
         <input type="text" name="emit_data" id="emit_data" placeholder="Message">
         <input type="submit" value="Echo">
     </form>
 
-    <h2>Receive:</h2>
+    <h2>Receive:</h2>/-->
     <div id="log"></div>
 </body>
 </html>
