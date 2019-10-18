@@ -4,6 +4,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 import eventlet
 import random
+import os
 
 
 class world():
@@ -83,7 +84,8 @@ socketio = SocketIO(app, async_mode=async_mode)
 
 @app.route('/')
 def index():
-    return render_template('index.html', async_mode=socketio.async_mode)
+    port = int(os.environ.get('PORT', 5000))
+    return render_template('index.html', async_mode=socketio.async_mode, port=port)
 
 
 @socketio.on('my_event', namespace='/test')
