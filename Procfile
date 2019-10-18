@@ -1,1 +1,1 @@
-web: gunicorn --worker-class eventlet -w 1 -b HOST:8000 app:app
+web: gunicorn --worker-class eventlet -w 1 -b 0.0.0.0:8000 app:app
