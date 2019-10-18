@@ -1,8 +1,5 @@
-from flask import Flask, render_template, session, request, \
-    copy_current_request_context
-from flask_socketio import SocketIO, emit, join_room, leave_room, \
-    close_room, rooms, disconnect
-import eventlet
+from flask import Flask, render_template, session, request
+from flask_socketio import SocketIO, emit
 import random
 import os
 
@@ -15,6 +12,7 @@ class world():
         self.characters = []
 
     def world_create(self):
+        '''Creates postitions for each point on the map.'''
         for coloumn in range(self.coloumns):
             self.map_positions.append([])
             for row in range(self.rows):
@@ -23,6 +21,7 @@ class world():
                 self.map_positions[coloumn].append(spot)
 
     def character_pos(self):
+        '''Updates where each of the players are at.'''
         for coloumn in self.map_positions:
             for position in coloumn:
                 position.occupied = None
@@ -30,7 +29,9 @@ class world():
                     if position.x_cord == character.x and position.y_cord == character.y:
                         position.occupied = character.color
 
+
     def return_location(self, x=7, y=7):
+        '''Returns what each play can see.'''
         location = []
         position_count = 0
         check = 0
@@ -55,6 +56,7 @@ class world():
 
 class spots():
     def __init__(self, x, y):
+        """Builds a spot on the map."""
         self.x_cord = x
         self.y_cord = y
         self.color_list = ['#FE1B04', '#FE9C04', '#F6FE04', '#01FD03', '#01FDB4', '#0174FD', '#C801FD']
@@ -64,17 +66,35 @@ class spots():
 
 class character():
     def __init__(self):
+        '''Creates a player with random starting position.'''
         self.id = str(random.random())
-        self.x = 7
-        self.y = 7
+        self.x = random.randint(0, new_world.coloumns - 1)
+        self.y = random.randint(0, new_world.rows - 1)
         self.color = '#030303'
+
+    def right(self):
+        new_world.character_pos()
+        if new_world.map_positions[self.x - 1][self.y].occupied is None:
+            self.x = self.x - 1
+
+    def left(self):
+        new_world.character_pos()
+        if new_world.map_positions[self.x + 1][self.y].occupied is None:
+            self.x = self.x + 1
+
+    def up(self):
+        new_world.character_pos()
+        if new_world.map_positions[self.x][self.y - 1].occupied is None:
+            self.y = self.y - 1
+
+    def down(self):
+        new_world.character_pos()
+        if new_world.map_positions[self.x][self.y + 1].occupied is None:
+            self.y = self.y + 1
 
 
 new_world = world(20, 20)
 new_world.world_create()
-# Set this variable to "threading", "eventlet" or "gevent" to test the
-# different async modes, or leave it set to None for the application to choose
-# the best option based on installed packages.
 async_mode = None
 
 app = Flask(__name__)
@@ -88,75 +108,60 @@ def index():
     return render_template('index.html', async_mode=socketio.async_mode, port=port)
 
 
-@socketio.on('my_event', namespace='/test')
-def test_message(message):
-    session['receive_count'] = session.get('receive_count', 0) + 1
-    emit('my_response',
-         {'data': message['data'], 'count': session['receive_count']})
-
-
 @socketio.on('left', namespace='/test')
 def left_key(message):
     global new_world
-    session['receive_count'] = session.get('receive_count', 0) + 1
     current_character = session.get('character')
-    current_character.x = current_character.x + 1
+    if current_character.x + 1 < new_world.coloumns:
+        current_character.left()
     session['character'] = current_character
     new_world.character_pos()
     for character in new_world.characters:
         char_id = character.id
         veiw = new_world.return_location(character.x, character.y)
-
-        emit('veiw_port',
-             {'data': char_id, 'veiw': veiw}, broadcast=True)
+        emit('veiw_port', {'data': char_id, 'veiw': veiw}, broadcast=True)
 
 
 @socketio.on('right', namespace='/test')
 def right_key(message):
     global new_world
-    session['receive_count'] = session.get('receive_count', 0) + 1
     current_character = session.get('character')
-    current_character.x = current_character.x - 1
+    if current_character.x - 1 > -1:
+        current_character.right()
     session['character'] = current_character
     new_world.character_pos()
     for character in new_world.characters:
         char_id = character.id
         veiw = new_world.return_location(character.x, character.y)
-
-        emit('veiw_port',
-             {'data': char_id, 'veiw': veiw}, broadcast=True)
+        emit('veiw_port', {'data': char_id, 'veiw': veiw}, broadcast=True)
 
 
 @socketio.on('up', namespace='/test')
 def up_key(message):
     global new_world
-    session['receive_count'] = session.get('receive_count', 0) + 1
     current_character = session.get('character')
-    current_character.y = current_character.y - 1
+    if current_character.y - 1 > -1:
+        current_character.up()
     session['character'] = current_character
     new_world.character_pos()
     for character in new_world.characters:
         char_id = character.id
         veiw = new_world.return_location(character.x, character.y)
-
-        emit('veiw_port',
-             {'data': char_id, 'veiw': veiw}, broadcast=True)
+        emit('veiw_port', {'data': char_id, 'veiw': veiw}, broadcast=True)
 
 
 @socketio.on('down', namespace='/test')
 def down_key(message):
     global new_world
-    session['receive_count'] = session.get('receive_count', 0) + 1
     current_character = session.get('character')
-    current_character.y = current_character.y + 1
+    if current_character.y + 1 < new_world.rows:
+        current_character.down()
     session['character'] = current_character
     new_world.character_pos()
     for character in new_world.characters:
         char_id = character.id
         veiw = new_world.return_location(character.x, character.y)
-
-        emit('veiw_port',
-             {'data': char_id, 'veiw': veiw}, broadcast=True)
+        emit('veiw_port', {'data': char_id, 'veiw': veiw}, broadcast=True)
 
 
 @socketio.on('connect', namespace='/test')
@@ -166,10 +171,22 @@ def test_connect():
     new_world.characters.append(player)
     session['character'] = player
     emit('connected', {'data': player.id, 'count': 0})
+    new_world.character_pos()
+    for _character in new_world.characters:
+        char_id = _character.id
+        veiw = new_world.return_location(_character.x, _character.y)
+        emit('veiw_port', {'data': char_id, 'veiw': veiw}, broadcast=True)
 
 
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
+    player = session.get('character')
+    new_world.characters.remove(player)
+    new_world.character_pos()
+    for character in new_world.characters:
+        char_id = character.id
+        veiw = new_world.return_location(character.x, character.y)
+        emit('veiw_port', {'data': char_id, 'veiw': veiw}, broadcast=True)
     print('Client disconnected', request.sid)
 
 
