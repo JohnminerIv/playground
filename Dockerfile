@@ -6,12 +6,11 @@
 # STEP 1: Install base image. Optimized for Python.
 FROM python:3.7-slim-buster
 
-# STEP 2: Install required dependencies.
-RUN python3 -m pip install -r requirements.txt
 
 # STEP 3: Copy the source code in the current directory to the container.
 # Store it in a folder named /app.
 ADD . /app
+RUN python3 -m pip install -r /app/requirements.txt
 
 # STEP 4: Set working directory to /app so we can execute commands in it
 WORKDIR /app
@@ -24,4 +23,4 @@ ENV FLASK_ENV=development
 EXPOSE 5000
 
 # STEP 7: Run Flask!
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["python3", "app.py"]
