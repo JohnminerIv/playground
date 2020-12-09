@@ -19,7 +19,7 @@ ENV FLASK_APP=app.py
 ENV FLASK_ENV=development
 
 # STEP 5: Expose the port that Flask is running on
-EXPOSE 5000
+EXPOSE ${PORT}
 
 # STEP 6: Run Flask!
 CMD ["python3", "app.py"]

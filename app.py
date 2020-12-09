@@ -2,7 +2,11 @@ from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit
 import random
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
+in_production = os.getenv("INPRODUCTION")
+port = os.getenv("PORT")
 
 class world():
     def __init__(self, rows, coloumns):
@@ -104,7 +108,10 @@ socketio = SocketIO(app, async_mode=async_mode)
 
 @app.route('/')
 def index():
-    port = int(os.environ.get('PORT', 5000))
+    if in_production == "true":
+        port = 80
+    else:
+        port = os.getenv("PORT")
     return render_template('index.html', async_mode=socketio.async_mode, port=port)
 
 
@@ -191,4 +198,7 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=False, host='0.0.0.0', port=5000)
+    if in_production == "true":
+        socketio.run(app, host="0.0.0.0", debug=False, port=port)
+    else:
+        socketio.run(app, debug=True, port=port)
