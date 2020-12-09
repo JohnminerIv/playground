@@ -4,10 +4,8 @@ import random
 import os
 from dotenv import load_dotenv
 load_dotenv()
-
 in_production = os.getenv("INPRODUCTION")
-port = os.getenv("PORT")
-
+local_docker = os.getenv("LOCALDOCKER")
 class world():
     def __init__(self, rows, coloumns):
         self.rows = rows
@@ -111,7 +109,7 @@ def index():
     if in_production == "true":
         port = 80
     else:
-        port = os.getenv("PORT")
+        port = int(os.getenv("PORT"))
     return render_template('index.html', async_mode=socketio.async_mode, port=port)
 
 
@@ -198,8 +196,8 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    port = os.getenv("PORT")
-    if in_production == "true":
-        socketio.run(app, host="0.0.0.0", debug=False, port=port)
+    if in_production == "true" or local_docker == "true":
+        port = int(os.getenv("PORT"))
+        socketio.run(app, debug=False, host='0.0.0.0', port=5000)
     else:
-        socketio.run(app, debug=False, port=port)
+        socketio.run(app, debug=False, host='127.0.0.1', port=5000)
