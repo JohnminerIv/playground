@@ -198,7 +198,8 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
+    port = os.getenv("PORT")
     if in_production == "true":
         socketio.run(app, host="0.0.0.0", debug=False, port=port)
     else:
-        socketio.run(app, debug=True, port=port)
+        socketio.run(app, debug=False, port=port)
